@@ -1,0 +1,19 @@
+version: "1.0"
+tables:
+  recordings:
+    file_path: "ptbxl_database.csv"
+    patient_id: "patient_id"
+    timestamp: null
+    attributes:
+      - "ecg_id"
+      - "filename_lr"
+      - "filename_hr"
+      - "age"
+      - "sex"
+  scp_codes:
+    file_path: "ptbxl_database.csv"
+    patient_id: "patient_id"
+    timestamp: null
+    attributes:
+      - "ecg_id"
+      - "scp_codes"
