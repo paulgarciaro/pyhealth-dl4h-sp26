@@ -25,16 +25,14 @@ def _write_fake_ptbxl(
     n_records: int = 6,
 ) -> None:
     """Write minimal fake PTB-XL CSV files to *root* (≤ 5 patients)."""
-    # Use the real column name from PTB-XL: "diagnostic_superclass" holds the
-    # five superclass strings (MI, HYP, STTC, CD, NORM).  "diagnostic_class"
-    # contains finer subtypes (e.g. "ISCAL", "IMI") and must NOT be used for
-    # superclass mapping.
+    # diagnostic_class is the correct PTB-XL column holding the 5 superclass
+    # labels (MI, HYP, STTC, CD, NORM). diagnostic_subclass holds finer types.
     pd.DataFrame(
         {
             "Unnamed: 0": ["NORM", "MI", "ISCAL", "HYP", "STTC", "CD"],
             "diagnostic": [1, 1, 1, 1, 1, 1],
             "diagnostic_class": ["NORM", "MI", "MI", "HYP", "STTC", "CD"],
-            "diagnostic_superclass": ["NORM", "MI", "MI", "HYP", "STTC", "CD"],
+            "diagnostic_subclass": ["NORM", "IMI", "ISCAL", "LVH", "ISC_", "CLBBB"],
         }
     ).to_csv(os.path.join(root, "scp_statements.csv"), index=False)
 

@@ -117,13 +117,15 @@ class PTBXLDataset(BaseDataset):
         df = pd.read_csv(db_path, index_col="ecg_id")
         df["scp_codes"] = df["scp_codes"].apply(ast.literal_eval)
 
-        # Build {scp_code -> diagnostic_superclass} mapping from scp_statements
+        # Build {scp_code -> diagnostic_class} mapping from scp_statements.
+        # In PTB-XL, diagnostic_class holds the 5 superclass labels used by
+        # the TaskAug paper: MI, HYP, STTC, CD, NORM.
         superclass_map: Dict[str, str] = {}
         scp_path = os.path.join(root, "scp_statements.csv")
         if os.path.exists(scp_path):
             scp_df = pd.read_csv(scp_path, index_col=0)
             scp_df = scp_df[scp_df["diagnostic"] == 1]
-            superclass_map = scp_df["diagnostic_superclass"].to_dict()
+            superclass_map = scp_df["diagnostic_class"].to_dict()
 
         filename_col = "filename_hr" if self.sampling_rate == 500 else "filename_lr"
 
