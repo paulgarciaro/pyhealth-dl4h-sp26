@@ -158,6 +158,23 @@ def compute_auroc(y_true: np.ndarray, y_prob: np.ndarray) -> float:
     return float(np.trapz(tpr, fpr))
 
 
+def compute_auprc(y_true: np.ndarray, y_prob: np.ndarray) -> float:
+    """Compute AUPRC (average precision) without sklearn (trapezoidal rule)."""
+    order = np.argsort(-y_prob)
+    y_sorted = y_true[order]
+    n_pos = y_sorted.sum()
+    if n_pos == 0:
+        return float("nan")
+    tp = np.cumsum(y_sorted)
+    fp = np.cumsum(1 - y_sorted)
+    precision = tp / (tp + fp)
+    recall = tp / n_pos
+    # Prepend (recall=0, precision=1) so the curve starts at the top-left
+    precision = np.concatenate([[1.0], precision])
+    recall = np.concatenate([[0.0], recall])
+    return float(np.trapz(precision, recall))
+
+
 @torch.no_grad()
 def evaluate(
     model: nn.Module,
@@ -182,6 +199,7 @@ def evaluate(
         "loss": float(np.mean(all_loss)),
         "accuracy": float(acc),
         "auroc": compute_auroc(y_true, y_prob),
+        "auprc": compute_auprc(y_true, y_prob),
     }
 
 
