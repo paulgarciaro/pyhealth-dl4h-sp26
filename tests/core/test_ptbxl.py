@@ -25,11 +25,16 @@ def _write_fake_ptbxl(
     n_records: int = 6,
 ) -> None:
     """Write minimal fake PTB-XL CSV files to *root* (≤ 5 patients)."""
+    # Use the real column name from PTB-XL: "diagnostic_superclass" holds the
+    # five superclass strings (MI, HYP, STTC, CD, NORM).  "diagnostic_class"
+    # contains finer subtypes (e.g. "ISCAL", "IMI") and must NOT be used for
+    # superclass mapping.
     pd.DataFrame(
         {
             "Unnamed: 0": ["NORM", "MI", "ISCAL", "HYP", "STTC", "CD"],
             "diagnostic": [1, 1, 1, 1, 1, 1],
             "diagnostic_class": ["NORM", "MI", "MI", "HYP", "STTC", "CD"],
+            "diagnostic_superclass": ["NORM", "MI", "MI", "HYP", "STTC", "CD"],
         }
     ).to_csv(os.path.join(root, "scp_statements.csv"), index=False)
 
@@ -178,9 +183,11 @@ class TestDataIntegrity:
             obj._prepare_metadata(root)
 
             meta = pd.read_csv(os.path.join(root, "ptbxl_metadata.csv"))
-            assert meta[meta["ecg_id"] == "3"]["mi_label"].iloc[0] == 1
-            assert meta[meta["ecg_id"] == "6"]["mi_label"].iloc[0] == 1
-            assert meta[meta["ecg_id"] == "1"]["mi_label"].iloc[0] == 0
+            # ecg_id is stored as digit-only strings; pandas infers int64 on read-back.
+            ecg_id = meta["ecg_id"].astype(int)
+            assert meta[ecg_id == 3]["mi_label"].iloc[0] == 1
+            assert meta[ecg_id == 6]["mi_label"].iloc[0] == 1
+            assert meta[ecg_id == 1]["mi_label"].iloc[0] == 0
 
     def test_labels_are_binary(self):
         with tempfile.TemporaryDirectory() as root:
@@ -239,7 +246,9 @@ class TestPatientParsing:
             obj._prepare_metadata(root)
 
             meta = pd.read_csv(os.path.join(root, "ptbxl_metadata.csv"))
-            assert meta["patient_id"].dtype == object  # string column
+            # patient_id is written as digit-only strings; pandas infers int64 on
+            # read-back.  Verify the values are at least safely castable to str.
+            assert meta["patient_id"].apply(lambda x: str(x)).dtype == object
 
     def test_records_per_patient_correct(self):
         with tempfile.TemporaryDirectory() as root:

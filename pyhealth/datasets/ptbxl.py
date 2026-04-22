@@ -45,7 +45,8 @@ class PTBXLDataset(BaseDataset):
         config_path: Path to a custom YAML schema config.  Defaults to the
             built-in ``configs/ptbxl.yaml``.
         sampling_rate: Waveform sampling rate to load.  Must be ``100`` or
-            ``500`` (Hz).  Default: ``100``.
+            ``500`` (Hz).  Default: ``500`` (matches Raghu et al. 2022, which
+            resamples the 500 Hz records to 250 Hz before modelling).
         dev: If ``True``, restrict to the first 100 patients for fast
             development iterations.
 
@@ -61,7 +62,7 @@ class PTBXLDataset(BaseDataset):
         root: str,
         dataset_name: Optional[str] = None,
         config_path: Optional[str] = None,
-        sampling_rate: int = 100,
+        sampling_rate: int = 500,
         dev: bool = False,
     ) -> None:
         if sampling_rate not in (100, 500):
@@ -122,7 +123,7 @@ class PTBXLDataset(BaseDataset):
         if os.path.exists(scp_path):
             scp_df = pd.read_csv(scp_path, index_col=0)
             scp_df = scp_df[scp_df["diagnostic"] == 1]
-            superclass_map = scp_df["diagnostic_class"].to_dict()
+            superclass_map = scp_df["diagnostic_superclass"].to_dict()
 
         filename_col = "filename_hr" if self.sampling_rate == 500 else "filename_lr"
 
