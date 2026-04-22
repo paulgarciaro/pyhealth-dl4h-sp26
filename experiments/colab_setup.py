@@ -1,20 +1,32 @@
 """
 colab_setup.py — Import firewall + experiment utilities for TaskAug on PTB-XL.
 
-Run via the Colab notebook cell:
+Usage
+-----
+Colab notebook:
     exec(open(f'{REPO_ROOT}/experiments/colab_setup.py').read())
 
-After exec(), the following are available in the caller's namespace:
+Local Python:
+    from experiments.colab_setup import *   # after setting REPO_ROOT in env
+    # or just run experiments/run_local.py
+
+After exec/import the following are available:
     DEVICE, TASKS, N_SIZES, N_SPLITS, EPOCHS, BATCH
     get_dataloader, split_by_patient, PTBXLDataset
     ECGBinaryClassificationPTBXL, binary_metrics_fn
     ResNet1D, TaskAugPolicy, BiLevelTrainer
-    build_loaders(task, n, seed, ptb_root) → (train_loader, val_loader, test_loader, sample_ds)
-    run_split(task, n, seed, method, ptb_root, output_base) → {roc_auc, pr_auc}
+    build_loaders(task, n, seed, ptb_root)
+    run_split(task, n, seed, method, ptb_root, output_base)
 """
 
-# ── REPO_ROOT must already be set by the notebook cell ──────────────────────
+from pathlib import Path as _Path
 import importlib.util as _ilu
+
+# ── Auto-detect REPO_ROOT if not already defined ────────────────────────────
+# When exec()'d from Colab the caller sets REPO_ROOT before calling us.
+# When run directly or imported, we infer it from this file's location.
+if "REPO_ROOT" not in dir():
+    REPO_ROOT = str(_Path(__file__).resolve().parent.parent)
 import sys
 import types
 import os
