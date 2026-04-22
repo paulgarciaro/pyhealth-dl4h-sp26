@@ -1,0 +1,13 @@
+version: "1.0.0"
+tables:
+  records500:
+    file_path: "ptbxl-pyhealth.csv"
+    patient_id: "patient_id"
+    timestamp: null
+    attributes:
+    - "ecg_id"
+    - "filename_hr"
+    - "superclass_mi"
+    - "superclass_hyp"
+    - "superclass_sttc"
+    - "superclass_cd"

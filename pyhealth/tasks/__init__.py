@@ -66,4 +66,11 @@ from .variant_classification import (
     MutationPathogenicityPrediction,
     VariantClassificationClinVar,
 )
+from .ecg_classification_ptbxl import (
+    ECGBinaryClassificationPTBXL,
+    MIClassificationPTBXL,
+    HYPClassificationPTBXL,
+    STTCClassificationPTBXL,
+    CDClassificationPTBXL,
+)
 from .patient_linkage_mimic3 import PatientLinkageMIMIC3Task
