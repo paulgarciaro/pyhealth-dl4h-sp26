@@ -680,7 +680,7 @@ class BiLevelTrainer:
         Returns:
             dict[str, float]: Metric name → score.
         """
-        from pyhealth.metrics import binary_metrics_fn
+        from pyhealth.metrics.binary import binary_metrics_fn
 
         self.model.eval()
         all_y_true: List[Tensor] = []
